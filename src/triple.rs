@@ -23,6 +23,10 @@ pub struct MontyHall<T> {
     bucket_info: Atomic<BucketInfo>,
 }
 
+/// RefCell isn't Sync because of interior mutability,
+/// but we guarentee no concurrent mutation
+unsafe impl<T> Sync for MontyHall<T> where T: Send {}
+
 /// A reference to the element stored in the MontyHall at a certain point in time
 pub struct MontyHallHandle<'a, T> {
     acquired: usize,
