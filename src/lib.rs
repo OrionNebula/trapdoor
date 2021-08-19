@@ -10,6 +10,8 @@ use std::{
     },
 };
 
+pub mod triple;
+
 /// An unsplit trapdoor.
 pub struct Trapdoor<T> {
     populated: AtomicBool,
@@ -59,7 +61,7 @@ impl<T> Trapdoor<T> {
         Self::with_value(Default::default())
     }
 
-    /// Split the trapdoor into the sender and reciever halves.
+    /// Split the trapdoor into the sender and receiver halves.
     ///
     /// # Examples
     ///

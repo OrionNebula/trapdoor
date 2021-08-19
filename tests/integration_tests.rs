@@ -62,3 +62,48 @@ fn test_store_take() {
     }
 }
 
+mod triple {
+    use trapdoor::triple::*;
+
+    use crate::DropObserver;
+
+    #[test]
+    fn test_store_load() {
+        let (mut tx, mut rx) = MontyHall::new(1).split();
+
+        let handle = rx.load();
+        assert_eq!(*handle, 1);
+        tx.store(2);
+        assert_eq!(*handle, 1);
+
+        std::mem::drop(handle);
+
+        let handle = rx.load();
+        assert_eq!(*handle, 2);
+        tx.store(3);
+        tx.store(4);
+        assert_eq!(*handle, 2);
+
+        std::mem::drop(handle);
+
+        let handle = rx.load();
+        assert_eq!(*handle, 4);
+        tx.store(5);
+        tx.store(6);
+        assert_eq!(*handle, 4);
+
+        std::mem::drop(handle);
+        assert_eq!(*rx.load(), 6);
+    }
+
+    #[test]
+    fn test_drop() {
+        let mut did_drop = false;
+        let (tx, rx) = MontyHall::new(DropObserver(&mut did_drop)).split();
+
+        std::mem::drop(tx);
+        std::mem::drop(rx);
+
+        assert!(did_drop);
+    }
+}
